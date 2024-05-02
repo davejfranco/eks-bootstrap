@@ -6,7 +6,6 @@ metadata:
 namespace: argocd
 
 resources:
-  - base/namespace.yaml
   - https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.9/manifests/install.yaml
   - base/github-repos.yaml 
 

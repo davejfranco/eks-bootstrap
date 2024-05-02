@@ -6,13 +6,26 @@ terraform {
       version = "5.47.0"
     }
     kustomization = {
-        source  = "kbst/kustomize"
-        version = "v0.2.0-beta.3"
-      }
+      source  = "kbst/kustomization"
+      version = "0.9.5"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "2.29.0"
+    }
+  }
 }
 
-provider "kustomization" {}
+provider "kustomization" {
+  kubeconfig_path = "~/.kube/config"
+  context         = module.eks.cluster_arn
+}
+
+# In case of not creating the cluster, this will be an incompletely configured, unused provider, which poses no problem.
+provider "kubernetes" {
+  config_path    = "~/.kube/config"
+  config_context = module.eks.cluster_arn
+}
 
 provider "aws" {
   region  = var.region
@@ -88,6 +101,13 @@ module "eks" {
 
 
   tags = local.default_tags
+}
+
+resource "null_resource" "kubectl" {
+  provisioner "local-exec" {
+    command = "aws eks --region ${var.region} update-kubeconfig --name ${module.eks.cluster_name}"
+  }
+  depends_on = [module.eks]
 }
 
 /* IAM */

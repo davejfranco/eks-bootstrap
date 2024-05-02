@@ -1,6 +1,14 @@
- 
+#argocd namespace
+resource "kubernetes_namespace_v1" "argocd" {
+  metadata {
+    name = "argocd"
+  }
+
+  depends_on = [module.eks, null_resource.kubectl]
+}
+
 data "kustomization_build" "argo" {
-  path = "infra/argocd"
+  path = "bootstrap/argocd"
 }
 
 resource "kustomization_resource" "argocd" {
@@ -9,5 +17,5 @@ resource "kustomization_resource" "argocd" {
   manifest = data.kustomization_build.argo.manifests[each.value]
 
 
-  depends_on = [module.eks, helm_release.cilium, kustomization_resource.cert-manager, kustomization_resource.external-secrets]
+  depends_on = [module.eks, null_resource.kubectl, kubernetes_namespace_v1.argocd]
 }
