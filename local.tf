@@ -1,5 +1,5 @@
 locals {
-  prefix = "eks-bootstrap"
+  prefix = "argo"
 
   network = {
     cidr = "172.16.0.0/16"

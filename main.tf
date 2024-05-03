@@ -13,18 +13,51 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "2.29.0"
     }
+    null = {
+      source  = "hashicorp/null"
+      version = "3.2.2"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "2.5.1"
+    }
   }
+}
+/* Provider Configuration */
+resource "null_resource" "kubectl" {
+  provisioner "local-exec" {
+    command = "aws eks --region ${var.region} update-kubeconfig --name ${module.eks.cluster_name} --kubeconfig $(pwd)/.kube/config"
+  }
+  depends_on = [module.eks]
+}
+
+# Generate Kubeconfig 
+data "local_file" "kubeconfig" {
+  filename   = ".kube/config"
+  depends_on = [null_resource.kubectl]
 }
 
 provider "kustomization" {
-  kubeconfig_path = "~/.kube/config"
-  context         = module.eks.cluster_arn
+  #kubeconfig_path = data.local_file.kubeconfig.filename
+  kubeconfig_raw = data.local_file.kubeconfig.content
+}
+
+# This data source is necessary to configure the Kubernetes provider
+data "aws_eks_cluster" "cluster" {
+  name       = module.eks.cluster_name
+  depends_on = [module.eks]
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  name       = module.eks.cluster_name
+  depends_on = [module.eks]
 }
 
 # In case of not creating the cluster, this will be an incompletely configured, unused provider, which poses no problem.
 provider "kubernetes" {
-  config_path    = "~/.kube/config"
-  config_context = module.eks.cluster_arn
+  host                   = data.aws_eks_cluster.cluster.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
 }
 
 provider "aws" {
@@ -103,12 +136,6 @@ module "eks" {
   tags = local.default_tags
 }
 
-resource "null_resource" "kubectl" {
-  provisioner "local-exec" {
-    command = "aws eks --region ${var.region} update-kubeconfig --name ${module.eks.cluster_name}"
-  }
-  depends_on = [module.eks]
-}
 
 /* IAM */
 # External Secrets
