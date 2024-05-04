@@ -1,9 +1,10 @@
 # Terraform
 .terraform/
+terraform.tfstate
+terraform.tfstate.*
 .terraform.lock.hcl
 .terraform.lock.hcl.backup
-terraform.tfstate
-terraform.tfstate.backup
+terraform.tfstate.lock.info
 
 # kubernetes
 .kube/
