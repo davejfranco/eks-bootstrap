@@ -10,7 +10,14 @@ spec:
     namespace: argocd
     server: https://kubernetes.default.svc
   project: default
+
   source:
     path: bootstrap/core
     repoURL: https://github.com/davejfranco/eks-bootstrap
     targetRevision: main
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
