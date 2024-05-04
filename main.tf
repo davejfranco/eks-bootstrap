@@ -26,7 +26,7 @@ terraform {
 /* Provider Configuration */
 resource "null_resource" "kubectl" {
   provisioner "local-exec" {
-    command = "aws eks --region ${var.region} update-kubeconfig --name ${module.eks.cluster_name} --kubeconfig $(pwd)/.kube/config"
+    command = "aws eks --region ${var.region} update-kubeconfig --name ${module.eks.cluster_name} --profile ${var.profile} --kubeconfig $(pwd)/.kube/config"
   }
   depends_on = [module.eks]
 }
