@@ -1,0 +1,75 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ack
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    notifications.argoproj.io/subscribe.on-deployed.slack: argo-cd
+
+spec:
+  project: default
+
+  revisionHistoryLimit: 5
+
+  sources:
+    - repoURL: https://github.com/aws-controllers-k8s/ack-chart.git
+      path: .
+      targetRevision: 9.0.0
+      helm:
+        valuesObject:
+          iam:
+            enabled: true
+            aws:
+              region: us-east-1
+            serviceAccount:
+              create: true
+              name: ack-controller
+              annotations:
+                eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/argo-ack-iam-role
+
+          rds:
+            enabled: true
+            aws:
+              region: us-east-1
+            serviceAccount:
+              create: true
+              name: ack-controller
+              annotations:
+                eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/argo-ack-rds-role
+
+          s3:
+            enabled: true
+            aws:
+              region: us-east-1
+            serviceAccount:
+              create: true
+              name: ack-controller
+              annotations:
+                eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/argo-ack-s3-role
+
+    - repoURL: https://github.com/aws-controllers-k8s/elasticache-controller
+      path: helm/
+      targetRevision: v0.0.29
+      helm:
+        valuesObject:
+          aws:
+            region: us-east-1
+          serviceAccount:
+            name: ack-controller
+            annotations:
+              eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/ack
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: ack-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true
