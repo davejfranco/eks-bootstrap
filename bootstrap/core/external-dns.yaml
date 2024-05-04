@@ -1,21 +1,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: external-secrets
+  name: external-dns
   namespace: argocd
 spec:
   project: default
   source:
-    chart: external-secrets
-    repoURL: https://charts.external-secrets.io
-    targetRevision: 0.9.17
+    chart: external-dns
+    repoURL: https://kubernetes-sigs.github.io/external-dns/
+    targetRevision: 1.14.4
     helm:
-      releaseName: external-secrets
+      releaseName: external-dns
       valuesObject:
         serviceAccount:
           create: true 
           annotations:
-            eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/argo-external-secrets-role 
+            eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/argo-external-dns-role
   destination:
     server: "https://kubernetes.default.svc"
     namespace: external-secrets
