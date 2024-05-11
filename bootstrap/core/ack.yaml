@@ -58,7 +58,7 @@ spec:
           aws:
             region: us-east-1
           serviceAccount:
-            name: ack-controller
+            name: ack-elasticache-controller
             annotations:
               eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/ack
 
