@@ -121,7 +121,7 @@ module "eks" {
     demo = {
       min_size     = 1
       max_size     = 2
-      desired_size = 1
+      desired_size = 2
 
       instance_types = ["t3.medium"]
       capacity_type  = "ON_DEMAND"
@@ -263,14 +263,14 @@ data "aws_iam_policy_document" "ack_iam_trust_policy" {
 
     condition {
       test     = "StringEquals"
-      values   = ["system:serviceaccount:ack-system:iam-controller-sa"]
+      values   = ["system:serviceaccount:ack-system:ack-iam-controller"]
       variable = "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub"
     }
   }
 }
 
 resource "aws_iam_role" "ack_iam" {
-  name               = "${local.prefix}-ack-iam-role"
+  name               = "ack-iam-controller"
   assume_role_policy = data.aws_iam_policy_document.ack_iam_trust_policy.json
 }
 
@@ -367,14 +367,14 @@ data "aws_iam_policy_document" "ack_s3_trust_policy" {
 
     condition {
       test     = "StringEquals"
-      values   = ["system:serviceaccount:ack-system:s3-controller-sa"]
+      values   = ["system:serviceaccount:ack-system:ack-s3-controller"]
       variable = "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub"
     }
   }
 }
 
 resource "aws_iam_role" "ack_s3" {
-  name               = "${local.prefix}-ack-s3-role"
+  name               = "ack-s3-controller"
   assume_role_policy = data.aws_iam_policy_document.ack_s3_trust_policy.json
 }
 
@@ -434,14 +434,14 @@ data "aws_iam_policy_document" "ack_rds_trust_policy" {
 
     condition {
       test     = "StringEquals"
-      values   = ["system:serviceaccount:ack-system:rds-controller-sa"]
+      values   = ["system:serviceaccount:ack-system:ack-rds-controller"]
       variable = "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub"
     }
   }
 }
 
 resource "aws_iam_role" "ack_rds" {
-  name               = "${local.prefix}-ack-rds-role"
+  name               = "ack-rds-controller"
   assume_role_policy = data.aws_iam_policy_document.ack_rds_trust_policy.json
 }
 

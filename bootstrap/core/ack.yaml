@@ -28,7 +28,7 @@ spec:
               create: true
               name: ack-iam-controller
               annotations:
-                eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/argo-ack-iam-role
+                eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/ack-iam-controller
 
           rds:
             enabled: true
@@ -38,7 +38,7 @@ spec:
               create: true
               name: ack-rds-controller
               annotations:
-                eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/argo-ack-rds-role
+                eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/ack-rds-controller
 
           s3:
             enabled: true
@@ -48,7 +48,7 @@ spec:
               create: true
               name: ack-s3-controller
               annotations:
-                eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/argo-ack-s3-role
+                eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/ack-s3-controller
 
     - repoURL: https://github.com/aws-controllers-k8s/elasticache-controller
       path: helm/
@@ -60,7 +60,7 @@ spec:
           serviceAccount:
             name: ack-elasticache-controller
             annotations:
-              eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/ack
+              eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/ack-elasticache-controller
 
   destination:
     server: "https://kubernetes.default.svc"
