@@ -16,9 +16,11 @@ spec:
           create: true 
           annotations:
             eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/argo-external-secrets-role 
+  
   destination:
     server: "https://kubernetes.default.svc"
     namespace: external-secrets
+  
   syncPolicy:
     automated:
       prune: true

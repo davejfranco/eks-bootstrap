@@ -38,9 +38,10 @@ spec:
         
         domainFilters:
           - papelon.store
+
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: external-secrets
+    namespace: external-dns
   syncPolicy:
     automated:
       prune: true
