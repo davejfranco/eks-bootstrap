@@ -1,24 +1,39 @@
+---
 apiVersion: argoproj.io/v1alpha1
-kind: Application
+kind: ApplicationSet
+
 metadata:
-  name: infra
+  name: infra-appset 
   namespace: argocd
-  finalizers:
-  - resources-finalizer.argocd.argoproj.io
+
 spec:
-  destination:
-    namespace: argocd
-    server: https://kubernetes.default.svc
-  project: default
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - clusters: {}
+  template:
+    metadata:
+      name: infra-app-of-apps
+      namespace: argocd
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+    
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/davejfranco/eks-bootstrap
+        path: ./bootstrap/core/ 
+        targetRevision: main
+        directory:
+          recurse: true
 
-  source:
-    path: bootstrap/core
-    repoURL: https://github.com/davejfranco/eks-bootstrap
-    targetRevision: main
-
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
+      destination:
+        namespace: argocd
+        server: https://kubernetes.default.svc
+      
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
