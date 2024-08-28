@@ -12,10 +12,32 @@ spec:
     helm:
       releaseName: external-dns
       valuesObject:
+        logLevel: info
+
+        podSecurityContext:
+          runAsUser: 0
+          fsGroup: 65534
+
         serviceAccount:
           create: true 
           annotations:
             eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/argo-external-dns-role
+        
+        provider: aws
+          region: us-east-1
+          zoneType: public
+        
+        policy: upsert-only
+        registry: txt
+        txtOwnerID: 444106639146
+
+        sources:
+          - service
+          - ingress
+          - gateway
+        
+        domainFilters:
+          - papelon.store
   destination:
     server: "https://kubernetes.default.svc"
     namespace: external-secrets
