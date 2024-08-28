@@ -98,8 +98,8 @@ module "eks" {
   cluster_name    = "${local.prefix}-eks"
   cluster_version = "1.29"
 
-  cluster_endpoint_public_access = true
-
+  cluster_endpoint_public_access       = true
+  cluster_endpoint_public_access_cidrs = ["89.150.163.70/32"]
   cluster_addons = {
     coredns = {
       most_recent = true
