@@ -36,7 +36,6 @@ spec:
         sources:
           - service
           - ingress
-          - gateway
         
         domainFilters:
           - papelon.store
