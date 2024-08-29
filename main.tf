@@ -189,6 +189,73 @@ resource "aws_iam_policy_attachment" "external_secrets" {
   policy_arn = aws_iam_policy.external_secrets.arn
 }
 
+
+# cert-manager 
+data "aws_iam_policy_document" "cert_manager_trust_policy" {
+  statement {
+    sid     = "certmanager"
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    effect  = "Allow"
+
+    principals {
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}"]
+      type        = "Federated"
+    }
+
+    condition {
+      test     = "StringEquals"
+      values   = ["system:serviceaccount:cert-manager:cert-manager"]
+      variable = "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub"
+    }
+  }
+}
+
+resource "aws_iam_role" "cert_manager" {
+  name               = "${local.prefix}-cert-manager-role"
+  assume_role_policy = data.aws_iam_policy_document.cert_manager_trust_policy.json
+}
+
+data "aws_iam_policy_document" "cert_manager_access" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "route53:GetChange"
+    ]
+    resources = [
+      "arn:aws:route53:::change/*"
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "route53:ListResourceRecordSets",
+      "route53:ChangeResourceRecordSets"
+
+    ]
+    resources = ["arn:aws:route53:::hostedzone/*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "route53:ListHostedZonesByName",
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "cert_manager" {
+  name   = "${local.prefix}-cert-manager-access"
+  policy = data.aws_iam_policy_document.cert_manager_access.json
+}
+
+resource "aws_iam_policy_attachment" "cert_manager" {
+  name       = "${local.prefix}-cert-manager-attachment"
+  roles      = [aws_iam_role.cert_manager.name]
+  policy_arn = aws_iam_policy.cert_manager.arn
+}
+
 # External DNS
 data "aws_iam_policy_document" "external_dns_trust_policy" {
   statement {
