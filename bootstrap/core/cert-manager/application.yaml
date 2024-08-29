@@ -7,16 +7,21 @@ spec:
   project: default
   source:
     chart: cert-manager
-    repoURL: bitnami/cert-manager
-    targetRevision: 1.15.3
+    repoURL: https://charts.jetstack.io
+    targetRevision: v1.15.3
     helm:
       releaseName: cert-manager
       valuesObject:
+        crds:
+          enabled: true
+
         serviceAccount:
           create: true 
           annotations:
             eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/argo-cert-manager-role
         
+        dns01RecursiveNameservers: 8.8.8.8:53,1.1.1.1:53
+        dns01RecursiveNameserversOnly: true
   destination:
     server: "https://kubernetes.default.svc"
     namespace: cert-manager
