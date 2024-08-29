@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: cert-manager
+    repoURL: jetstack/cert-manager
+    targetRevision: 1.15.3
+    helm:
+      releaseName: cert-manager
+      valuesObject:
+        serviceAccount:
+          create: true 
+          annotations:
+            eks.amazonaws.com/role-arn: arn:aws:iam::444106639146:role/argo-cert-manager-role
+        
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
