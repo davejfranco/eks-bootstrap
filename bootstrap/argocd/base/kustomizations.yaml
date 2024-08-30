@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kustomizations
+spec:
+  project: default
+  
+  source:
+    path: kustomizations/
+    repoURL: 'https://github.com/davejfranco/eks-bootstrap'
+    targetRevision: main
+  
+  destination:
+    namespace: default
+    server: 'https://kubernetes.default.svc'

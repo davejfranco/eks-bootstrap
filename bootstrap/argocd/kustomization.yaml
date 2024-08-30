@@ -9,3 +9,4 @@ resources:
   - https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.9/manifests/install.yaml
   - base/github-repos.yaml 
   - base/infra.yaml
+  - base/kustomizations.yaml
