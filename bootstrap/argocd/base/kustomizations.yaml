@@ -6,7 +6,7 @@ spec:
   project: default
   
   source:
-    path: kustomizations/
+    path: bootstrap/kustomizations/
     repoURL: 'https://github.com/davejfranco/eks-bootstrap'
     targetRevision: develop
     directory:
