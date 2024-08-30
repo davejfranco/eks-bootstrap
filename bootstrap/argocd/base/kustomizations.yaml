@@ -8,8 +8,10 @@ spec:
   source:
     path: kustomizations/
     repoURL: 'https://github.com/davejfranco/eks-bootstrap'
-    targetRevision: main
-  
+    targetRevision: develop
+    directory:
+      recurse: true
+
   destination:
     namespace: default
     server: 'https://kubernetes.default.svc'
